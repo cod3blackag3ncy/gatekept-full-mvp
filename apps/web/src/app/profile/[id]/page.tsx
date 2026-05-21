@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Heart, X, Flag, MapPin, Sparkles } from 'lucide-react';
 
-export function generateStaticParams() {
-  return [{ id: 'profile-sarah' }, { id: 'profile-emma' }, { id: 'profile-william' }];
-}
 import { useAuth } from '@/hooks/useAuth';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { ReportModal } from '@/components/ReportModal';

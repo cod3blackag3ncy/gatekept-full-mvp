@@ -4,9 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
-export function generateStaticParams() {
-  return [{ token: 'demo-token' }];
-}
 import { api } from '@/lib/api';
 
 export default function VerifyEmailPage({ params }: { params: { token: string } }) {

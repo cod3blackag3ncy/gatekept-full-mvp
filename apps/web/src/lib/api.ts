@@ -3,7 +3,7 @@
 // Set NEXT_PUBLIC_SIMULATE_ERRORS=1 to simulate 5% error rate
 
 import { mockStore, StoredProfile, SwipeAction, Conversation, StoredMessage, NotificationItem, WaitlistEntry } from './mockStore';
-import { User, Match, Report, Preferences, Profile } from '@gatekept/shared';
+import { User, Match, Report, Preferences, Profile } from '@/lib/types';
 
 const SIMULATE_ERRORS = process.env.NEXT_PUBLIC_SIMULATE_ERRORS === '1';
 const ERROR_RATE = 0.05; // 5% error rate

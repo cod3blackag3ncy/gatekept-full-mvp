@@ -6,7 +6,7 @@ import { X, Heart, MessageCircle, User, Shield, Volume2, VolumeX, Flag } from 'l
 import { useAuth } from '@/hooks/useAuth';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { ReportModal } from '@/components/ReportModal';
-import type { FeedProfile } from '@gatekept/shared';
+import type { FeedProfile } from '@/lib/types';
 
 // Mock feed data with real video URLs
 const mockProfiles: FeedProfile[] = [

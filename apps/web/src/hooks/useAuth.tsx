@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { User, AuthTokens } from '@gatekept/shared';
+import type { User, AuthTokens } from '@/lib/types';
 
 interface AuthContextType {
   user: User | null;

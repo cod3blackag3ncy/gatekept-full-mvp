@@ -1,7 +1,7 @@
 // Mock localStorage-backed store for Gatekept
 // All data persists to localStorage for demo/testing purposes
 
-import { User, Profile, Match, Message, Report, Notification } from '@gatekept/shared';
+import { User, Profile, Match, Message, Report, Notification } from '@/lib/types';
 
 // Types specific to mock store
 export interface StoredProfile extends Profile {

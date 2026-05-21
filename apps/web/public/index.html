@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gatekept - Video Dating</title>
+    <meta name="description" content="Premium video-first dating. Real connections, verified profiles.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .tagline {
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            max-width: 300px;
+        }
+        .features {
+            display: grid;
+            gap: 1rem;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .feature {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+        .feature-text {
+            font-size: 0.95rem;
+            color: #e5e7eb;
+        }
+        .cta-button {
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            color: #fff;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.4);
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+        .secondary-link {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .demo-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.1);
+            color: #9ca3af;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">Gatekept</div>
+    <p class="tagline">Premium video-first dating. Real connections, verified profiles.</p>
+    
+    <div class="features">
+        <div class="feature">
+            <span class="feature-icon">📹</span>
+            <span class="feature-text">Video profiles - see the real person</span>
+        </div>
+        <div class="feature">
+            <span class="feature-icon">✓</span>
+            <span class="feature-text">Verified identities - no catfishing</span>
+        </div>
+        <div class="feature">
+            <span class="feature-icon">💬</span>
+            <span class="feature-text">Video messages - no small talk</span>
+        </div>
+        <div class="feature">
+            <span class="feature-icon">🔒</span>
+            <span class="feature-text">Ephemeral chats - 72hr auto-delete</span>
+        </div>
+    </div>
+    
+    <a href="/app.html" class="cta-button">Enter Demo</a>
+    
+    <a href="#" class="secondary-link" onclick="alert('Coming soon!')">Learn more →</a>
+    
+    <div class="demo-badge">MVP Demo - Work in Progress</div>
+</body>
+</html>

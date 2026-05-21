@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gatekept - Video Dating</title>
+    <meta name="description" content="Premium video-first dating. Real connections, verified profiles.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Feed Page Styles */
+        .feed-container {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .profile-card {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .profile-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .profile-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+        
+        .profile-info {
+            position: absolute;
+            bottom: 140px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        
+        .profile-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .profile-name h2 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .verified-badge {
+            color: #3b82f6;
+            font-size: 1.2rem;
+        }
+        
+        .profile-bio {
+            color: #e5e7eb;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .profile-interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .interest-tag {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        /* Action Buttons */
+        .actions {
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            z-index: 100;
+        }
+        
+        .action-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .pass-btn {
+            background: rgba(255,255,255,0.1);
+            color: #9ca3af;
+        }
+        
+        .connect-btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.4);
+        }
+        
+        .report-btn {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            background: rgba(0,0,0,0.5);
+            color: #fca5a5;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            z-index: 50;
+        }
+        
+        /* Loading/End States */
+        .loading, .end-state {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(244, 63, 94, 0.2);
+            border-top-color: #f43f5e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .end-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .end-title {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .end-text {
+            color: #9ca3af;
+            margin-bottom: 24px;
+        }
+        
+        .refresh-btn {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        /* Login Page */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #4c1d1d 0%, #0f172a 50%, #000 100%);
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 360px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            color: #9ca3af;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .input-group label {
+            color: #e5e7eb;
+            font-size: 0.9rem;
+        }
+        
+        .input-group input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .input-group input:focus {
+            border-color: #f43f5e;
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            color: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #9ca3af;
+        }
+        
+        .login-footer a {
+            color: #f43f5e;
+            text-decoration: none;
+        }
+        
+        .demo-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(244, 63, 94, 0.2);
+            color: #f43f5e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.success {
+            border-left: 4px solid #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    
+    <script>
+        // Demo profiles data
+        const profiles = [
+            {
+                id: '1',
+                displayName: 'Sarah',
+                age: 26,
+                bio: 'Coffee lover and weekend hiker. Looking for someone to explore the city with.',
+                location: 'San Francisco, CA',
+                photos: ['https://i.pravatar.cc/400?img=5'],
+                interests: ['coffee', 'hiking', 'photography'],
+            },
+            {
+                id: '2',
+                displayName: 'James',
+                age: 29,
+                bio: 'Software engineer by day, musician by night. Let\'s grab drinks!',
+                location: 'Los Angeles, CA',
+                photos: ['https://i.pravatar.cc/400?img=11'],
+                interests: ['music', 'coding', 'travel'],
+            },
+            {
+                id: '3',
+                displayName: 'Emma',
+                age: 27,
+                bio: 'Art lover, yoga enthusiast, dog mom. Swipe right for good vibes.',
+                location: 'New York, NY',
+                photos: ['https://i.pravatar.cc/400?img=9'],
+                interests: ['art', 'yoga', 'dogs'],
+            },
+            {
+                id: '4',
+                displayName: 'Michael',
+                age: 31,
+                bio: 'Fitness junkie, amateur chef, adventure seeker.',
+                location: 'Austin, TX',
+                photos: ['https://i.pravatar.cc/400?img=13'],
+                interests: ['fitness', 'cooking', 'travel'],
+            },
+            {
+                id: '5',
+                displayName: 'Olivia',
+                age: 24,
+                bio: 'Bookworm, tea drinker, sunset chaser.',
+                location: 'Seattle, WA',
+                photos: ['https://i.pravatar.cc/400?img=10'],
+                interests: ['reading', 'tea', 'hiking'],
+            },
+            {
+                id: '6',
+                displayName: 'William',
+                age: 30,
+                bio: 'Just moved here! Show me around? Love trying new restaurants.',
+                location: 'Miami, FL',
+                photos: ['https://i.pravatar.cc/400?img=12'],
+                interests: ['food', 'travel', 'beach'],
+            },
+            {
+                id: '7',
+                displayName: 'Ava',
+                age: 28,
+                bio: 'Dog lover, nature photographer, coffee addict.',
+                location: 'Denver, CO',
+                photos: ['https://i.pravatar.cc/400?img=8'],
+                interests: ['dogs', 'photography', 'coffee'],
+            },
+            {
+                id: '8',
+                displayName: 'Lucas',
+                age: 32,
+                bio: 'Gamer, tech enthusiast, pizza connoisseur.',
+                location: 'Chicago, IL',
+                photos: ['https://i.pravatar.cc/400?img=14'],
+                interests: ['gaming', 'tech', 'food'],
+            },
+        ];
+
+        let currentIndex = 0;
+        let isAuthenticated = false;
+
+        function showToast(message, type = 'success') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function renderLogin() {
+            document.getElementById('app').innerHTML = `
+                <div class="login-page">
+                    <div class="login-container">
+                        <div class="login-header">
+                            <div class="login-logo">❤️</div>
+                            <h1 class="login-title">Gatekept</h1>
+                            <p class="login-subtitle">Premium video dating</p>
+                        </div>
+                        <form class="login-form" id="loginForm">
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" id="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <input type="password" id="password" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="login-btn">Log In</button>
+                        </form>
+                        <div class="login-footer">
+                            <p>Don't have an account? <a href="#" onclick="renderRegister()">Sign up</a></p>
+                        </div>
+                    </div>
+                    <div class="demo-badge">Demo Mode - No backend required</div>
+                </div>
+            `;
+            
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                isAuthenticated = true;
+                showToast('Welcome back!');
+                setTimeout(renderFeed, 500);
+            });
+        }
+
+        function renderRegister() {
+            document.getElementById('app').innerHTML = `
+                <div class="login-page">
+                    <div class="login-container">
+                        <div class="login-header">
+                            <div class="login-logo">❤️</div>
+                            <h1 class="login-title">Gatekept</h1>
+                            <p class="login-subtitle">Create your account</p>
+                        </div>
+                        <form class="login-form" id="registerForm">
+                            <div class="input-group">
+                                <label>Name</label>
+                                <input type="text" id="name" placeholder="Your name" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" id="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <input type="password" id="password" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="login-btn">Sign Up</button>
+                        </form>
+                        <div class="login-footer">
+                            <p>Already have an account? <a href="#" onclick="renderLogin()">Log in</a></p>
+                        </div>
+                    </div>
+                    <div class="demo-badge">Demo Mode - No backend required</div>
+                </div>
+            `;
+            
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                isAuthenticated = true;
+                showToast('Account created!');
+                setTimeout(renderFeed, 500);
+            });
+        }
+
+        function handleSwipe(action) {
+            const card = document.querySelector('.profile-card');
+            const profile = profiles[currentIndex];
+            
+            if (action === 'connect') {
+                card.style.transform = 'translateX(100%) rotate(20deg)';
+                card.style.opacity = '0';
+                showToast(`You liked ${profile.displayName}!`);
+            } else {
+                card.style.transform = 'translateX(-100%) rotate(-20deg)';
+                card.style.opacity = '0';
+            }
+            
+            setTimeout(() => {
+                currentIndex++;
+                renderFeed();
+            }, 300);
+        }
+
+        function renderFeed() {
+            if (!isAuthenticated) {
+                renderLogin();
+                return;
+            }
+            
+            if (currentIndex >= profiles.length) {
+                document.getElementById('app').innerHTML = `
+                    <div class="end-state">
+                        <div class="end-icon">❤️</div>
+                        <h2 class="end-title">No more profiles</h2>
+                        <p class="end-text">Check back later for more matches</p>
+                        <button class="refresh-btn" onclick="currentIndex = 0; renderFeed()">Start Over</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const profile = profiles[currentIndex];
+            
+            document.getElementById('app').innerHTML = `
+                <div class="feed-container">
+                    <div class="header">
+                        <div class="logo">Gatekept</div>
+                        <div class="header-icons">
+                            <button class="icon-btn" onclick="showToast('Messages coming soon')">💬</button>
+                            <button class="icon-btn" onclick="showToast('Profile coming soon')">👤</button>
+                        </div>
+                    </div>
+                    
+                    <button class="report-btn" onclick="showToast('Report submitted')">⚠️ Report</button>
+                    
+                    <div class="profile-card" style="transition: transform 0.3s, opacity 0.3s;">
+                        <div class="profile-image" style="background-image: url('${profile.photos[0]}')"></div>
+                        <div class="profile-gradient"></div>
+                        
+                        <div class="profile-info">
+                            <div class="profile-name">
+                                <h2>${profile.displayName}, ${profile.age}</h2>
+                                <span class="verified-badge">✓</span>
+                            </div>
+                            <p class="profile-bio">${profile.bio}</p>
+                            <div class="profile-interests">
+                                ${profile.interests.map(i => `<span class="interest-tag">${i}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="action-btn pass-btn" onclick="handleSwipe('pass')">✕</button>
+                        <button class="action-btn connect-btn" onclick="handleSwipe('connect')">❤️</button>
+                    </div>
+                    
+                    <div class="demo-badge">Demo Mode</div>
+                </div>
+            `;
+            
+            // Enable swipe gestures
+            let touchStartX = 0;
+            const card = document.querySelector('.profile-card');
+            
+            card.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+            
+            card.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchEndX - touchStartX;
+                
+                if (Math.abs(diff) > 100) {
+                    handleSwipe(diff > 0 ? 'connect' : 'pass');
+                }
+            }, { passive: true });
+        }
+
+        // Initialize
+        renderFeed();
+    </script>
+</body>
+</html>

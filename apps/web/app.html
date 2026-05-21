@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gatekept - Video Dating</title>
+    <meta name="description" content="Premium video-first dating. Real connections, verified profiles.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .feed-container {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .profile-card {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .profile-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #111;
+        }
+        
+        .profile-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #111;
+        }
+        
+        .profile-video.hidden {
+            display: none;
+        }
+        
+        .profile-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .profile-image.visible {
+            z-index: 2;
+        }
+        
+        .profile-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .profile-info {
+            position: absolute;
+            bottom: 140px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        
+        .profile-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .profile-name h2 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .verified-badge {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        
+        .profile-bio {
+            color: #e5e7eb;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .profile-location {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        
+        .profile-interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .interest-tag {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .actions {
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            z-index: 100;
+        }
+        
+        .action-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .pass-btn {
+            background: rgba(255,255,255,0.1);
+            color: #9ca3af;
+        }
+        
+        .connect-btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(244, 63, 94, 0.4);
+        }
+        
+        .report-btn {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            background: rgba(0,0,0,0.6);
+            color: #fca5a5;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(252, 165, 165, 0.3);
+            z-index: 50;
+        }
+        
+        .mute-btn {
+            position: absolute;
+            top: 80px;
+            left: 16px;
+            z-index: 50;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+        
+        .mute-btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: #f43f5e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 5;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .end-state {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #4c1d1d 0%, #0f172a 50%, #000 100%);
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 360px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .login-subtitle {
+            color: #9ca3af;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .input-group label {
+            color: #e5e7eb;
+            font-size: 0.9rem;
+        }
+        
+        .input-group input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            color: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .demo-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(244, 63, 94, 0.2);
+            color: #f43f5e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        /* Preload container for next video */
+        .preload-container {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <div id="preloadContainer" class="preload-container"></div>
+    
+    <script>
+        // Video sources that actually work (Google's public demo bucket)
+        const profiles = [
+            {
+                id: '1',
+                displayName: 'Sarah',
+                age: 26,
+                bio: 'Coffee lover and weekend hiker. Looking for someone to explore the city with.',
+                location: 'San Francisco, CA',
+                photos: ['https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                poster: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
+                interests: ['coffee', 'hiking', 'photography'],
+            },
+            {
+                id: '2',
+                displayName: 'James',
+                age: 29,
+                bio: 'Software engineer by day, musician by night. Let\'s grab drinks!',
+                location: 'Los Angeles, CA',
+                photos: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+                poster: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800',
+                interests: ['music', 'coding', 'travel'],
+            },
+            {
+                id: '3',
+                displayName: 'Emma',
+                age: 27,
+                bio: 'Art lover, yoga enthusiast, dog mom. Swipe right for good vibes.',
+                location: 'New York, NY',
+                photos: ['https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+                poster: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800',
+                interests: ['art', 'yoga', 'dogs'],
+            },
+            {
+                id: '4',
+                displayName: 'Michael',
+                age: 31,
+                bio: 'Fitness junkie, amateur chef, adventure seeker.',
+                location: 'Austin, TX',
+                photos: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+                poster: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800',
+                interests: ['fitness', 'cooking', 'travel'],
+            },
+            {
+                id: '5',
+                displayName: 'Olivia',
+                age: 24,
+                bio: 'Bookworm, tea drinker, sunset chaser.',
+                location: 'Seattle, WA',
+                photos: ['https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+                poster: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800',
+                interests: ['reading', 'tea', 'hiking'],
+            },
+            {
+                id: '6',
+                displayName: 'William',
+                age: 30,
+                bio: 'Just moved here! Show me around? Love trying new restaurants.',
+                location: 'Miami, FL',
+                photos: ['https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                poster: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800',
+                interests: ['food', 'travel', 'beach'],
+            },
+            {
+                id: '7',
+                displayName: 'Ava',
+                age: 28,
+                bio: 'Dog lover, nature photographer, coffee addict.',
+                location: 'Denver, CO',
+                photos: ['https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                poster: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800',
+                interests: ['dogs', 'photography', 'coffee'],
+            },
+            {
+                id: '8',
+                displayName: 'Lucas',
+                age: 32,
+                bio: 'Gamer, tech enthusiast, pizza connoisseur.',
+                location: 'Chicago, IL',
+                photos: ['https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800'],
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+                poster: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800',
+                interests: ['gaming', 'tech', 'food'],
+            },
+        ];
+
+        let currentIndex = 0;
+        let isAuthenticated = false;
+        let activeVideos = []; // Track active videos for cleanup
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:16px 24px;border-radius:12px;z-index:1000;transition:opacity 0.3s;font-family:sans-serif;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+        }
+
+        function cleanupVideos() {
+            // Pause and cleanup any active videos
+            activeVideos.forEach(v => {
+                if (v) {
+                    v.pause();
+                    v.removeAttribute('src');
+                    v.load();
+                }
+            });
+            activeVideos = [];
+        }
+
+        function preloadNextVideo() {
+            const nextIndex = currentIndex + 1;
+            if (nextIndex >= profiles.length) return;
+            
+            const nextProfile = profiles[nextIndex];
+            const preloadContainer = document.getElementById('preloadContainer');
+            
+            // Clean old preload
+            preloadContainer.innerHTML = '';
+            
+            // Create preload video element
+            const preloadVideo = document.createElement('video');
+            preloadVideo.src = nextProfile.videoUrl;
+            preloadVideo.preload = 'auto';
+            preloadVideo.muted = true;
+            preloadVideo.playsInline = true;
+            preloadVideo.style.width = '1px';
+            preloadVideo.style.height = '1px';
+            
+            preloadContainer.appendChild(preloadVideo);
+            
+            // Start loading
+            preloadVideo.load();
+        }
+
+        function renderLogin() {
+            document.getElementById('app').innerHTML = `
+                <div class="login-page">
+                    <div class="login-container">
+                        <div class="login-header">
+                            <div class="login-logo">❤️</div>
+                            <h1 class="login-title">Gatekept</h1>
+                            <p class="login-subtitle">Premium video dating</p>
+                        </div>
+                        <form class="login-form" id="loginForm">
+                            <div class="input-group">
+                                <label>Email</label>
+                                <input type="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <input type="password" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="login-btn">Log In</button>
+                        </form>
+                    </div>
+                    <div class="demo-badge">Demo Mode</div>
+                </div>
+            `;
+            
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                isAuthenticated = true;
+                showToast('Welcome!');
+                renderFeed();
+            });
+        }
+
+        function handleSwipe(action) {
+            if (currentIndex >= profiles.length) return;
+            
+            const profile = profiles[currentIndex];
+            const card = document.querySelector('.profile-card');
+            
+            if (action === 'connect') {
+                card.style.transform = 'translateX(100px) rotate(10deg)';
+                card.style.opacity = '0';
+                showToast(`Liked ${profile.displayName}! ❤️`);
+            } else {
+                card.style.transform = 'translateX(-100px) rotate(-10deg)';
+                card.style.opacity = '0';
+            }
+            
+            // Cleanup videos before transition
+            cleanupVideos();
+            
+            setTimeout(() => {
+                currentIndex++;
+                renderFeed();
+            }, 300);
+        }
+
+        function toggleMute() {
+            const video = document.getElementById('profileVideo');
+            const muteBtn = document.getElementById('muteBtn');
+            if (!video || !muteBtn) return;
+            
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? '🔇' : '🔊';
+            
+            // If unmuting, ensure video is playing
+            if (!video.muted && video.paused) {
+                video.play().catch(e => {
+                    console.log('Play failed:', e);
+                    // Re-mute if autoplay blocked
+                    video.muted = true;
+                    muteBtn.textContent = '🔇';
+                });
+            }
+        }
+
+        function setupVideoEvents(video) {
+            const profileImage = document.getElementById('profileImage');
+            const muteBtn = document.getElementById('muteBtn');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            // Loading events
+            video.addEventListener('waiting', () => {
+                if (spinner) spinner.style.display = 'block';
+            });
+            
+            video.addEventListener('playing', () => {
+                if (spinner) spinner.style.display = 'none';
+            });
+            
+            video.addEventListener('canplay', () => {
+                if (spinner) spinner.style.display = 'none';
+                // Hide poster image once video can play
+                if (profileImage) profileImage.classList.remove('visible');
+            });
+            
+            // Error handling - show fallback image
+            video.addEventListener('error', () => {
+                console.error('Video error for:', video.src);
+                video.classList.add('hidden');
+                if (profileImage) profileImage.classList.add('visible');
+                if (muteBtn) muteBtn.classList.add('hidden');
+                if (spinner) spinner.style.display = 'none';
+                showToast('Video unavailable - showing photo');
+            });
+            
+            // Stalled (buffering issues)
+            video.addEventListener('stalled', () => {
+                console.log('Video stalled');
+            });
+        }
+
+        function initVideoPlayback() {
+            const video = document.getElementById('profileVideo');
+            if (!video) return;
+            
+            activeVideos.push(video);
+            setupVideoEvents(video);
+            
+            // Attempt autoplay muted (required for mobile)
+            video.muted = true;
+            video.play().then(() => {
+                console.log('Autoplay success');
+            }).catch(err => {
+                console.log('Autoplay blocked:', err);
+                // Video will show poster, user can unmute to play
+            });
+        }
+
+        function renderFeed() {
+            if (!isAuthenticated) {
+                renderLogin();
+                return;
+            }
+            
+            if (currentIndex >= profiles.length) {
+                cleanupVideos();
+                document.getElementById('app').innerHTML = `
+                    <div class="end-state">
+                        <div style="font-size:4rem;margin-bottom:20px;">❤️</div>
+                        <h2>No more profiles</h2>
+                        <button onclick="currentIndex=0;cleanupVideos();renderFeed()" style="margin-top:20px;padding:12px 24px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:24px;color:#fff;cursor:pointer;">Start Over</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const profile = profiles[currentIndex];
+            
+            document.getElementById('app').innerHTML = `
+                <div class="feed-container">
+                    <div class="header">
+                        <div class="logo">Gatekept</div>
+                        <div class="header-icons">
+                            <button class="icon-btn" onclick="showToast('Messages')">💬</button>
+                            <button class="icon-btn" onclick="showToast('Profile')">👤</button>
+                        </div>
+                    </div>
+                    
+                    <button class="report-btn" onclick="showToast('Reported')">⚠️ Report</button>
+                    
+                    <div class="profile-card" style="transition:transform 0.3s,opacity 0.3s;">
+                        <div class="profile-video-container">
+                            <div id="loadingSpinner" class="loading-spinner"></div>
+                            <video 
+                                id="profileVideo"
+                                class="profile-video" 
+                                src="${profile.videoUrl}"
+                                poster="${profile.poster}"
+                                autoplay 
+                                muted 
+                                loop 
+                                playsinline
+                                preload="auto"
+                                crossorigin="anonymous"
+                            ></video>
+                            <div id="profileImage" class="profile-image visible" style="background-image:url('${profile.photos[0]}');"></div>
+                        </div>
+                        
+                        <button id="muteBtn" class="mute-btn" onclick="toggleMute()">🔇</button>
+                        
+                        <div class="profile-gradient"></div>
+                        
+                        <div class="profile-info">
+                            <div class="profile-name">
+                                <h2>${profile.displayName}, ${profile.age}</h2>
+                                <div class="verified-badge">✓</div>
+                            </div>
+                            <p class="profile-bio">${profile.bio}</p>
+                            <p class="profile-location">📍 ${profile.location}</p>
+                            <div class="profile-interests">
+                                ${profile.interests.map(i => `<span class="interest-tag">${i}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="action-btn pass-btn" onclick="handleSwipe('pass')">✕</button>
+                        <button class="action-btn connect-btn" onclick="handleSwipe('connect')">❤️</button>
+                    </div>
+                    
+                    <div class="demo-badge">✅ Working Videos • ${currentIndex + 1}/${profiles.length}</div>
+                </div>
+            `;
+            
+            // Initialize video with error handling
+            initVideoPlayback();
+            
+            // Preload next video for smoother experience
+            preloadNextVideo();
+            
+            // Swipe gestures
+            let touchStartX = 0;
+            const card = document.querySelector('.profile-card');
+            
+            card.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            }, { passive: true });
+            
+            card.addEventListener('touchend', (e) => {
+                const diff = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(diff) > 100) {
+                    handleSwipe(diff > 0 ? 'connect' : 'pass');
+                }
+            }, { passive: true });
+        }
+
+        // Start
+        renderFeed();
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', cleanupVideos);
+    </script>
+</body>
+</html>

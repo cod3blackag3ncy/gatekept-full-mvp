@@ -1,0 +1,15 @@
+{
+  "name": "gatekept-full-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd apps/web && npm run dev",
+    "build": "cd apps/web && npm run build",
+    "export": "cd apps/web && npm run export",
+    "deploy": "cd apps/web && vercel --prod"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

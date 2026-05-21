@@ -139,3 +139,31 @@ export interface Report {
   status: 'pending' | 'reviewed' | 'resolved';
   createdAt: Date;
 }
+
+// Preferences Types
+export interface Preferences {
+  ageMin: number;
+  ageMax: number;
+  maxDistance: number;
+  interestedIn: ('male' | 'female' | 'nonbinary' | 'other')[];
+  showOnFeed: boolean;
+  showDistance: boolean;
+  showAge: boolean;
+  notifications: {
+    newMatches: boolean;
+    messages: boolean;
+    likes: boolean;
+    marketing: boolean;
+  };
+}
+
+// Notification Types
+export interface Notification {
+  id: string;
+  type: 'match' | 'message' | 'like' | 'system';
+  title: string;
+  body: string;
+  read: boolean;
+  createdAt: number;
+  data?: Record<string, any>;
+}

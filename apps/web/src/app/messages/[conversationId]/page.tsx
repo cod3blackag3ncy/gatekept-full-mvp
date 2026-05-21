@@ -3,6 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Send } from 'lucide-react';
+
+export function generateStaticParams() {
+  return [{ conversationId: 'conv-1' }, { conversationId: 'conv-2' }, { conversationId: 'conv-3' }];
+}
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { mockStore } from '@/lib/mockStore';

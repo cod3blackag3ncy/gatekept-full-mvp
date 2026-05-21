@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, ArrowLeft, Eye, EyeOff, CheckCircle } from 'lucide-react';
+
+export function generateStaticParams() {
+  return [{ token: 'demo-token' }];
+}
 import { api } from '@/lib/api';
 
 export default function ResetPasswordPage({ params }: { params: { token: string } }) {
